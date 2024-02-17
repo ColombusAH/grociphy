@@ -5,8 +5,7 @@ import 'package:flutter_first_app/screens/home_screen.dart';
 import 'package:flutter_first_app/screens/user.dart';
 import 'package:flutter_first_app/providers/dark_theme_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_iconly/flutter_iconly.dart';
-
+  import 'package:flutter_iconly/flutter_iconly.dart';
 
 class NavbarScreen extends StatefulWidget {
   const NavbarScreen({Key? key}) : super(key: key);
@@ -16,28 +15,61 @@ class NavbarScreen extends StatefulWidget {
 }
 
 class _NavbarScreenState extends State<NavbarScreen> {
-  final List _pages = [HomeScreen(), CategoriesScreen(), CartScreen(), UserScreen()];
+ final List<Map<String, dynamic>> _all_pages = [
+    {'page': const HomeScreen()},
+    {'page': const CategoriesScreen()},
+    {'page': const CartScreen()},
+    {'page': const UserScreen()}
+    ];
+
+    final List<String> _titles = [
+      'Home',
+      'Categories',
+      'Cart',
+      'User'
+    ];
+    
+  
   int _selectedIndex = 0;
   void _setSelectedPage(int index) {
     setState(() {
       _selectedIndex = index;
     });
   }
+
   @override
   Widget build(BuildContext context) {
     final themeState = Provider.of<DarkThemeProvider>(context);
     return Scaffold(
-      body: _pages[_selectedIndex],
+      appBar: AppBar(
+        title: Text(_titles[_selectedIndex].toString()),
+      ),
+      body: _all_pages[_selectedIndex]['page'],
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: _selectedIndex,
         onTap: _setSelectedPage,
-        items: const <BottomNavigationBarItem>[
-        BottomNavigationBarItem(icon: Icon(IconlyLight.home), label: 'Home',),
-        BottomNavigationBarItem(icon: Icon(IconlyLight.category), label: 'Categories'),
-        BottomNavigationBarItem(icon: Icon(IconlyLight.buy), label: 'Cart'),
-        BottomNavigationBarItem(icon: Icon(IconlyLight.user2), label: 'User'),
-      ],),
+        items: <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon:
+                Icon(_selectedIndex == 0 ? IconlyBold.home : IconlyLight.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+              icon: Icon(_selectedIndex == 1
+                  ? IconlyBold.category
+                  : IconlyLight.category),
+              label: 'Categories'),
+          BottomNavigationBarItem(
+              icon:
+                  Icon(_selectedIndex == 2 ? IconlyBold.buy : IconlyLight.buy),
+              label: 'Cart'),
+          BottomNavigationBarItem(
+              icon: Icon(
+                  _selectedIndex == 3 ? IconlyBold.user2 : IconlyLight.user2),
+              label: 'User'),
+        ],
+      ),
     );
   }
 }
