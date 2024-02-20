@@ -5,7 +5,7 @@ import 'package:flutter_first_app/screens/home_screen.dart';
 import 'package:flutter_first_app/screens/user.dart';
 import 'package:flutter_first_app/providers/dark_theme_provider.dart';
 import 'package:provider/provider.dart';
-  import 'package:flutter_iconly/flutter_iconly.dart';
+import 'package:flutter_iconly/flutter_iconly.dart';
 
 class NavbarScreen extends StatefulWidget {
   const NavbarScreen({Key? key}) : super(key: key);
@@ -15,21 +15,15 @@ class NavbarScreen extends StatefulWidget {
 }
 
 class _NavbarScreenState extends State<NavbarScreen> {
- final List<Map<String, dynamic>> _all_pages = [
+  final List<Map<String, dynamic>> _all_pages = [
     {'page': const HomeScreen()},
     {'page': const CategoriesScreen()},
     {'page': const CartScreen()},
     {'page': const UserScreen()}
-    ];
+  ];
 
-    final List<String> _titles = [
-      'Home',
-      'Categories',
-      'Cart',
-      'User'
-    ];
-    
-  
+  final List<String> _titles = ['Home', 'Categories', 'Cart', 'User'];
+
   int _selectedIndex = 0;
   void _setSelectedPage(int index) {
     setState(() {
