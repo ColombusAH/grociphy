@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_first_app/consts/theme_data.dart';
 import 'package:flutter_first_app/providers/dark_theme_provider.dart';
-import 'package:flutter_first_app/screens/home_screen.dart';
 import 'package:flutter_first_app/screens/navbar_screen.dart';
 import 'package:provider/provider.dart';
 

@@ -17,7 +17,7 @@ class NavbarScreen extends StatefulWidget {
 class _NavbarScreenState extends State<NavbarScreen> {
   final List<Map<String, dynamic>> _all_pages = [
     {'page': const HomeScreen()},
-    {'page': const CategoriesScreen()},
+    {'page': CategoriesScreen()},
     {'page': const CartScreen()},
     {'page': const UserScreen()}
   ];
@@ -35,9 +35,9 @@ class _NavbarScreenState extends State<NavbarScreen> {
   Widget build(BuildContext context) {
     final themeState = Provider.of<DarkThemeProvider>(context);
     return Scaffold(
-      appBar: AppBar(
-        title: Text(_titles[_selectedIndex].toString()),
-      ),
+      // appBar: AppBar(
+      //   title: Text(_titles[_selectedIndex].toString()),
+      // ),
       body: _all_pages[_selectedIndex]['page'],
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
