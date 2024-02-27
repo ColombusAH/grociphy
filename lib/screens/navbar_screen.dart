@@ -35,9 +35,9 @@ class _NavbarScreenState extends State<NavbarScreen> {
   Widget build(BuildContext context) {
     final themeState = Provider.of<DarkThemeProvider>(context);
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Text(_titles[_selectedIndex].toString()),
-      // ),
+      appBar: AppBar(
+        title: SizedBox(),
+      ),
       body: _all_pages[_selectedIndex]['page'],
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,

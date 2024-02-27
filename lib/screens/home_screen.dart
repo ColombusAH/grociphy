@@ -19,10 +19,12 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
   @override
   Widget build(BuildContext context) {
-    final themeState = Provider.of<DarkThemeProvider>(context);
+    final utils = Utils(context);
+    final themeState =utils.getIsDarkTheme;
     Size hostSize = Utils(context).getScreenSize;
     return Scaffold(
       body: SizedBox(
+          height: hostSize.height * 0.3,
           child: Swiper(
         itemBuilder: (BuildContext context, int index) {
           return Image.asset(

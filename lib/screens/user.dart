@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_first_app/providers/auth_provider.dart';
 import 'package:flutter_first_app/providers/dark_theme_provider.dart';
 import 'package:flutter_first_app/widgets/text_widget.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
@@ -16,6 +17,8 @@ class _UserScreenState extends State<UserScreen> {
   @override
   Widget build(BuildContext context) {
     final themeState = Provider.of<DarkThemeProvider>(context);
+    final authProvider = Provider.of<UserProvider>(context, listen: false);
+
     final Color color = themeState.getDarkTheme ? Colors.white : Colors.black;
     final TextEditingController addressTextController =
         TextEditingController(text: "");
@@ -65,7 +68,12 @@ class _UserScreenState extends State<UserScreen> {
               content: const Text('Are you sure you want to logout?'),
               actions: [
                 TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    authProvider.logout();
+                    if (Navigator.canPop(context)) {
+                      Navigator.pop(context);
+                    }
+                  },
                   child: const TextWidget(
                       text: 'Yes', color: Colors.cyan, textSize: 18),
                 ),
@@ -83,88 +91,90 @@ class _UserScreenState extends State<UserScreen> {
           });
     }
 
-    return Scaffold(
-        body: SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            RichText(
-                text: TextSpan(
-              text: 'Hi,  ',
-              style: TextStyle(
-                  color: Colors.cyanAccent,
-                  fontSize: 27,
-                  fontWeight: FontWeight.bold),
-              children: <TextSpan>[
-                TextSpan(
-                    text: 'My Name',
-                    style: TextStyle(
-                        color: color,
-                        fontSize: 25,
-                        fontWeight: FontWeight.w600),
-                    recognizer: TapGestureRecognizer()
-                      ..onTap = () {
-                        print('ssdsd');
-                      })
-              ],
-            )),
-            TextWidget(text: 'Email@email.com', color: color, textSize: 18),
-            SizedBox(
-              height: 20,
-            ),
-            Divider(
-              thickness: 2,
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            _buildListTile(
-                title: 'Profile',
-                icon: IconlyBold.profile,
-                subtitle: 'This is the user screen',
-                trailingIcon: IconlyLight.arrowRight2,
-                color: color,
-                onTap: () {}),
-            _buildListTile(
-                title: 'Address 2',
-                icon: IconlyBold.bag,
-                subtitle: 'This is the user screen',
-                trailingIcon: IconlyLight.arrowRight2,
-                color: color,
-                onTap: showAddressDialog),
-            _buildListTile(
-                title: 'Forgot Password',
-                icon: IconlyBold.unlock,
-                trailingIcon: IconlyLight.arrowRight2,
-                color: color,
-                onTap: () {}),
-            SwitchListTile(
-              title: TextWidget(
-                text: themeState.getDarkTheme ? 'Light Theme' : 'Dark Theme',
-                color: color,
-                textSize: 18,
+    return Consumer<UserProvider>(builder: (context, userProvider, child) {
+      return Scaffold(
+          body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              RichText(
+                  text: TextSpan(
+                text: 'Hi,  ',
+                style: TextStyle(
+                    color: Colors.cyanAccent,
+                    fontSize: 27,
+                    fontWeight: FontWeight.bold),
+                children: <TextSpan>[
+                  TextSpan(
+                      text: userProvider.user?.email,
+                      style: TextStyle(
+                          color: color,
+                          fontSize: 25,
+                          fontWeight: FontWeight.w600),
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () {
+                          print('ssdsd');
+                        })
+                ],
+              )),
+              TextWidget(text: 'Email@email.com', color: color, textSize: 18),
+              SizedBox(
+                height: 20,
               ),
-              secondary: Icon(themeState.getDarkTheme
-                  ? Icons.dark_mode_outlined
-                  : Icons.light_mode_outlined),
-              onChanged: (bool value) {
-                themeState.setDarkTheme = value;
-              },
-              value: themeState.getDarkTheme,
-            ),
-            _buildListTile(
-                title: 'Logout',
-                icon: IconlyBold.logout,
-                trailingIcon: IconlyLight.arrowRight2,
-                color: color,
-                onTap: showLogoutDialog)
-          ],
+              Divider(
+                thickness: 2,
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              _buildListTile(
+                  title: 'Profile',
+                  icon: IconlyBold.profile,
+                  subtitle: 'This is the user screen',
+                  trailingIcon: IconlyLight.arrowRight2,
+                  color: color,
+                  onTap: () {}),
+              _buildListTile(
+                  title: 'Address 2',
+                  icon: IconlyBold.bag,
+                  subtitle: 'This is the user screen',
+                  trailingIcon: IconlyLight.arrowRight2,
+                  color: color,
+                  onTap: showAddressDialog),
+              _buildListTile(
+                  title: 'Forgot Password',
+                  icon: IconlyBold.unlock,
+                  trailingIcon: IconlyLight.arrowRight2,
+                  color: color,
+                  onTap: () {}),
+              SwitchListTile(
+                title: TextWidget(
+                  text: themeState.getDarkTheme ? 'Light Theme' : 'Dark Theme',
+                  color: color,
+                  textSize: 18,
+                ),
+                secondary: Icon(themeState.getDarkTheme
+                    ? Icons.dark_mode_outlined
+                    : Icons.light_mode_outlined),
+                onChanged: (bool value) {
+                  themeState.setDarkTheme = value;
+                },
+                value: themeState.getDarkTheme,
+              ),
+              _buildListTile(
+                  title: 'Logout',
+                  icon: IconlyBold.logout,
+                  trailingIcon: IconlyLight.arrowRight2,
+                  color: color,
+                  onTap: showLogoutDialog)
+            ],
+          ),
         ),
-      ),
-    ));
+      ));
+    });
   }
 
   Widget _buildListTile(

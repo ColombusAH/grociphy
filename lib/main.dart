@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_first_app/consts/theme_data.dart';
+import 'package:flutter_first_app/providers/auth_provider.dart';
 import 'package:flutter_first_app/providers/dark_theme_provider.dart';
+import 'package:flutter_first_app/screens/auth_screen.dart';
 import 'package:flutter_first_app/screens/navbar_screen.dart';
+import 'package:flutter_first_app/services/storage.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -33,6 +36,16 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MultiProvider(
         providers: [
+          Provider<StorageService>(
+            create: (_) => StorageService(),
+          ),
+          ChangeNotifierProxyProvider<StorageService, UserProvider>(
+            create: (context) => UserProvider(Provider.of<StorageService>(
+                context,
+                listen: false)), // Now passing StorageService to UserProvider
+            update: (context, storageService, previousUserProvider) =>
+                UserProvider(storageService),
+          ),
           ChangeNotifierProvider(
             create: (_) {
               return themeChangeProvider;
@@ -41,11 +54,14 @@ class _MyAppState extends State<MyApp> {
         ],
         child: Consumer<DarkThemeProvider>(
             builder: (context, themeProvider, child) {
+          final authProvider =
+              Provider.of<UserProvider>(context, listen: true);
+            bool isAuthenticated = authProvider.isAuthenticated;
           return MaterialApp(
             debugShowCheckedModeBanner: false,
-            title: 'Flutter Demo',
+            title: 'Grociphy',
             theme: Styles.themeData(themeProvider.getDarkTheme, context),
-            home: NavbarScreen(),
+            home: isAuthenticated? NavbarScreen(): AuthScreen(),
           );
         }));
   }
