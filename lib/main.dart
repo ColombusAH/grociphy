@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_first_app/consts/theme_data.dart';
+import 'package:flutter_first_app/providers/api_client.dart';
 import 'package:flutter_first_app/providers/auth_provider.dart';
 import 'package:flutter_first_app/providers/categories_provider.dart';
 import 'package:flutter_first_app/providers/dark_theme_provider.dart';
 import 'package:flutter_first_app/screens/auth_screen.dart';
 import 'package:flutter_first_app/screens/navbar_screen.dart';
-import 'package:flutter_first_app/services/categories_serivce.dart';
 import 'package:flutter_first_app/services/storage.dart';
 import 'package:provider/provider.dart';
 
@@ -48,10 +48,19 @@ class _MyAppState extends State<MyApp> {
             update: (context, storageService, previousUserProvider) =>
                 UserProvider(storageService),
           ),
+          ProxyProvider<UserProvider, ApiClient>(create: (context) {
+            final userProvider =
+                Provider.of<UserProvider>(context, listen: false);
+            return ApiClient(userProvider: userProvider);
+          }, update: (context, userProvider, previousApiClient) {
+            return ApiClient(userProvider: userProvider);
+          }),
           ChangeNotifierProxyProvider<UserProvider, CategoriesProvider>(
-            create: (context) => CategoriesProvider(''),
+            create: (context) => CategoriesProvider(
+                '', Provider.of<ApiClient>(context, listen: false)),
             update: (context, userProvider, previousCategoriesProvider) =>
-                CategoriesProvider(userProvider.user?.token ?? ''),
+                CategoriesProvider(userProvider.user?.token ?? '',
+                    Provider.of<ApiClient>(context)),
           ),
           ChangeNotifierProvider(
             create: (_) {
