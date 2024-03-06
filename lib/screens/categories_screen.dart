@@ -52,7 +52,7 @@ class CategoriesScreenState extends State<CategoriesScreen> {
               // Use the modulo operator to cycle through the colors list
               Color color = colors[index % colors.length];
               // Assuming 'imgPath' might not exist, we use a placeholder
-              String imgPath = category['imgPath'] ?? 'assets/images/red-apple.png';
+              String imgPath = category['imgPath'] ?? 'assets/images/indica.png';
               String catText = category['name'];
 
               return CategoriesWidget(

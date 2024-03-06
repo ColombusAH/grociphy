@@ -23,7 +23,7 @@ class CategoriesProvider with ChangeNotifier {
 
     if (response.statusCode == 200) {
       _categories = json.decode(response.body);
-      print(categories[0]);
+      print(categories.map((e) => e['name']).toList());
       notifyListeners();
     } else {
       print('error fetching categories');
