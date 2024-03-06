@@ -9,75 +9,57 @@ import 'package:flutter_first_app/screens/navbar_screen.dart';
 import 'package:flutter_first_app/services/storage.dart';
 import 'package:provider/provider.dart';
 
-void main() {
-  runApp(MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final storageService = StorageService();
+  final themeChangeProvider = DarkThemeProvider();
+  final bool isDarkTheme = await themeChangeProvider.darkThemePrefs.getTheme();
+
+  runApp(MyApp(
+    storageService: storageService,
+    isDarkTheme: isDarkTheme,
+  ));
 }
 
-class MyApp extends StatefulWidget {
-  MyApp({super.key});
+class MyApp extends StatelessWidget {
+  final StorageService storageService;
+  final bool isDarkTheme;
 
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  DarkThemeProvider themeChangeProvider = DarkThemeProvider();
-
-  void getCurrentAppTheme() async {
-    themeChangeProvider.setDarkTheme =
-        await themeChangeProvider.darkThemePrefs.getTheme();
-  }
-
-  @override
-  void initState() {
-    getCurrentAppTheme();
-    super.initState();
-  }
+  MyApp({required this.storageService, required this.isDarkTheme});
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-        providers: [
-          Provider<StorageService>(
-            create: (_) => StorageService(),
-          ),
-          ChangeNotifierProxyProvider<StorageService, UserProvider>(
-            create: (context) => UserProvider(Provider.of<StorageService>(
-                context,
-                listen: false)), // Now passing StorageService to UserProvider
-            update: (context, storageService, previousUserProvider) =>
-                UserProvider(storageService),
-          ),
-          ProxyProvider<UserProvider, ApiClient>(create: (context) {
-            final userProvider =
-                Provider.of<UserProvider>(context, listen: false);
-            return ApiClient(userProvider: userProvider);
-          }, update: (context, userProvider, previousApiClient) {
-            return ApiClient(userProvider: userProvider);
-          }),
-          ChangeNotifierProxyProvider<UserProvider, CategoriesProvider>(
-            create: (context) => CategoriesProvider(
-                '', Provider.of<ApiClient>(context, listen: false)),
-            update: (context, userProvider, previousCategoriesProvider) =>
-                CategoriesProvider(userProvider.user?.token ?? '',
-                    Provider.of<ApiClient>(context)),
-          ),
-          ChangeNotifierProvider(
-            create: (_) {
-              return themeChangeProvider;
-            },
-          ),
-        ],
-        child: Consumer<DarkThemeProvider>(
-            builder: (context, themeProvider, child) {
-          final authProvider = Provider.of<UserProvider>(context, listen: true);
-          bool isAuthenticated = authProvider.isAuthenticated;
+      providers: [
+        Provider<StorageService>.value(value: storageService),
+        ChangeNotifierProvider(create: (_) => UserProvider(storageService)),
+        ChangeNotifierProvider(
+            create: (_) => DarkThemeProvider()..setDarkTheme = isDarkTheme),
+        ProxyProvider<UserProvider, ApiClient>(
+          update: (_, userProvider, __) =>
+              ApiClient(userProvider: userProvider),
+          lazy: false,
+        ),
+        ChangeNotifierProxyProvider2<UserProvider, ApiClient,
+            CategoriesProvider>(
+          create: (context) =>
+              CategoriesProvider('', context.read<ApiClient>()),
+          update: (context, userProvider, apiClient, previous) =>
+              CategoriesProvider(userProvider.user?.token ?? '', apiClient),
+        ),
+      ],
+      child: Consumer<DarkThemeProvider>(
+        builder: (context, themeProvider, _) {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
             title: 'Grociphy',
             theme: Styles.themeData(themeProvider.getDarkTheme, context),
-            home: isAuthenticated ? NavbarScreen() : AuthScreen(),
+            home: context.watch<UserProvider>().isAuthenticated
+                ? NavbarScreen()
+                : AuthScreen(),
           );
-        }));
+        },
+      ),
+    );
   }
 }
