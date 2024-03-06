@@ -24,7 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
     Size hostSize = Utils(context).getScreenSize;
     return Scaffold(
       body: SizedBox(
-          height: hostSize.height * 0.3,
+          height: hostSize.height,
           child: Swiper(
         itemBuilder: (BuildContext context, int index) {
           return Image.asset(

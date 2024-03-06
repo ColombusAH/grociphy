@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_first_app/consts/theme_data.dart';
 import 'package:flutter_first_app/providers/auth_provider.dart';
+import 'package:flutter_first_app/providers/categories_provider.dart';
 import 'package:flutter_first_app/providers/dark_theme_provider.dart';
 import 'package:flutter_first_app/screens/auth_screen.dart';
 import 'package:flutter_first_app/screens/navbar_screen.dart';
+import 'package:flutter_first_app/services/categories_serivce.dart';
 import 'package:flutter_first_app/services/storage.dart';
 import 'package:provider/provider.dart';
 
@@ -46,6 +48,11 @@ class _MyAppState extends State<MyApp> {
             update: (context, storageService, previousUserProvider) =>
                 UserProvider(storageService),
           ),
+          ChangeNotifierProxyProvider<UserProvider, CategoriesProvider>(
+            create: (context) => CategoriesProvider(''),
+            update: (context, userProvider, previousCategoriesProvider) =>
+                CategoriesProvider(userProvider.user?.token ?? ''),
+          ),
           ChangeNotifierProvider(
             create: (_) {
               return themeChangeProvider;
@@ -54,14 +61,13 @@ class _MyAppState extends State<MyApp> {
         ],
         child: Consumer<DarkThemeProvider>(
             builder: (context, themeProvider, child) {
-          final authProvider =
-              Provider.of<UserProvider>(context, listen: true);
-            bool isAuthenticated = authProvider.isAuthenticated;
+          final authProvider = Provider.of<UserProvider>(context, listen: true);
+          bool isAuthenticated = authProvider.isAuthenticated;
           return MaterialApp(
             debugShowCheckedModeBanner: false,
             title: 'Grociphy',
             theme: Styles.themeData(themeProvider.getDarkTheme, context),
-            home: isAuthenticated? NavbarScreen(): AuthScreen(),
+            home: isAuthenticated ? NavbarScreen() : AuthScreen(),
           );
         }));
   }
