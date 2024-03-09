@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_first_app/screens/cart_screen.dart';
 import 'package:flutter_first_app/screens/categories_screen.dart';
+import 'package:flutter_first_app/screens/groups_screen.dart';
 import 'package:flutter_first_app/screens/home_screen.dart';
 import 'package:flutter_first_app/screens/user.dart';
 import 'package:flutter_first_app/providers/dark_theme_provider.dart';
@@ -18,11 +19,11 @@ class _NavbarScreenState extends State<NavbarScreen> {
   final List<Map<String, dynamic>> _all_pages = [
     {'page': const HomeScreen()},
     {'page': CategoriesScreen()},
-    {'page': const CartScreen()},
+    {'page': GroupsListScreen()},
     {'page': const UserScreen()}
   ];
 
-  final List<String> _titles = ['Home', 'Categories', 'Cart', 'User'];
+  final List<String> _titles = ['Home', 'Categories', 'Groups', 'User'];
 
   int _selectedIndex = 0;
   void _setSelectedPage(int index) {
@@ -56,8 +57,8 @@ class _NavbarScreenState extends State<NavbarScreen> {
               label: 'Categories'),
           BottomNavigationBarItem(
               icon:
-                  Icon(_selectedIndex == 2 ? IconlyBold.buy : IconlyLight.buy),
-              label: 'Cart'),
+                  Icon(_selectedIndex == 2 ? IconlyBold.document : IconlyLight.document),
+              label: 'Groups'),
           BottomNavigationBarItem(
               icon: Icon(
                   _selectedIndex == 3 ? IconlyBold.user2 : IconlyLight.user2),

@@ -4,6 +4,7 @@ import 'package:flutter_first_app/providers/api_client.dart';
 import 'package:flutter_first_app/providers/auth_provider.dart';
 import 'package:flutter_first_app/providers/categories_provider.dart';
 import 'package:flutter_first_app/providers/dark_theme_provider.dart';
+import 'package:flutter_first_app/providers/groups_provider.dart';
 import 'package:flutter_first_app/screens/auth_screen.dart';
 import 'package:flutter_first_app/screens/navbar_screen.dart';
 import 'package:flutter_first_app/services/storage.dart';
@@ -42,11 +43,14 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProxyProvider2<UserProvider, ApiClient,
             CategoriesProvider>(
-          create: (context) =>
-              CategoriesProvider('', context.read<ApiClient>()),
+          create: (context) => CategoriesProvider(context.read<ApiClient>()),
           update: (context, userProvider, apiClient, previous) =>
-              CategoriesProvider(userProvider.user?.token ?? '', apiClient),
+              CategoriesProvider(apiClient),
         ),
+        ChangeNotifierProxyProvider<ApiClient, GroupsProvider>(
+          create: (context) => GroupsProvider(context.read<ApiClient>()),
+          update: (context, apiClient, previous) => GroupsProvider(apiClient),
+        )
       ],
       child: Consumer<DarkThemeProvider>(
         builder: (context, themeProvider, _) {
