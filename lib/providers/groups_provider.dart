@@ -11,7 +11,7 @@ class GroupsProvider with ChangeNotifier {
 
   List<dynamic> get groups => _groups;
 
-  Future<void> addGroup(Group group) async {
+  Future<void> addGroup(dynamic group) async {
    final createdGroup = await _apiClient.makeAuthenticatedRequest('/groups', method: 'POST', body: group);
     _groups.add(createdGroup);
     notifyListeners();
@@ -19,7 +19,6 @@ class GroupsProvider with ChangeNotifier {
 
   Future<void> fetchGroups() async {
     final response = await _apiClient.makeAuthenticatedRequest('/groups', method: 'GET');
-    print(response.body);
     if (response.statusCode == 200) {
       _groups.clear();
       _groups.addAll(json.decode(response.body));
@@ -29,7 +28,4 @@ class GroupsProvider with ChangeNotifier {
       print('error fetching groups');
     }
   }
-}
-
-class Group {
 }
