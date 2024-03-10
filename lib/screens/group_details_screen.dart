@@ -12,52 +12,127 @@ class GroupDetailsScreen extends StatefulWidget {
 }
 
 class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
+  List<ProductInList> products = [];
+  List<ProductInList> grabbedProducts = [];
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize availableProducts with widget.group.products
+    products = List.from(widget.group.products);
+  }
+
+  void moveProductToGrabbed(ProductInList product) {
+    if (!grabbedProducts.contains(product)) {
+      setState(() {
+        grabbedProducts.add(product);
+        products.removeWhere((p) => p.name == product.name);
+      });
+    }
+  }
+
+  void moveProductToAvailable(ProductInList product) {
+    if (!products.contains(product)) {
+      setState(() {
+        products.add(product);
+        grabbedProducts.removeWhere((p) => p.name == product.name);
+      });
+    }
+  }
+
+  Widget buildDraggableProductItem(ProductInList product,
+      {required Function(ProductInList) onDragged}) {
+    return Draggable<ProductInList>(
+      data: product,
+      feedback: Card(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: 150, maxHeight: 60),
+          child: ListTile(
+            title: Text(product.name),
+          ),
+        ),
+      ),
+      childWhenDragging: Opacity(
+        opacity: 0.5,
+        child: ListTile(
+          title: Text(product.name),
+          subtitle: Text(product.description),
+        ),
+      ),
+      onDragCompleted: () => onDragged(product),
+      child: ListTile(
+        title: Text(product.name),
+        subtitle: Text(product.description),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.group.name),
       ),
-      body: ListView.builder(
-        itemCount: widget.group.products
-            .length, // Assuming 'products' is a list of product categories
-        itemBuilder: (context, index) {
-          final category = widget.group.products[index].category;
-          final products = widget.group.products;
-          return ExpansionTile(
-            initiallyExpanded: true,
-            title: Text(category.name,
-                style: TextStyle(fontWeight: FontWeight.bold)),
-            children: products.map<Widget>((product) {
-              return ListTile(
-                title: Text(product.name),
-                subtitle: Text(product.description),
-                trailing: ProductInteractionButtons(product: product),
-                // Additional UI elements for interaction
-              );
-            }).toList(),
-          );
-        },
-      ),
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () {
-      //     // Logic to add a new product
-      //   },
-      //   child: Icon(Icons.add),
-      // ),
-      floatingActionButton: Stack(
-        fit: StackFit.expand,
+      body: Row(
         children: [
-          Positioned(
-            bottom: 80,
-            right: 15,
-            child: FloatingActionButton(
-              onPressed: () {
-                // Logic to navigate to the cart
-              },
-              child: Icon(Icons.shopping_cart),
+          // 'Available Products' Column
+          Expanded(
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text('Products',
+                      style: Theme.of(context).textTheme.headline6),
+                ),
+                Expanded(
+                  child: DragTarget<ProductInList>(
+                    onAccept: moveProductToAvailable,
+                    builder: (context, candidateData, rejectedData) {
+                      return ListView.builder(
+                        itemCount: products.length,
+                        itemBuilder: (context, index) {
+                          final product = products[index];
+                          return buildDraggableProductItem(product,
+                              onDragged: moveProductToGrabbed);
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ],
             ),
           ),
+          // 'Grabbed Products' Column
+          Expanded(
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text('Grabbed',
+                      style: Theme.of(context).textTheme.headline6),
+                ),
+                Expanded(
+                  child: DragTarget<ProductInList>(
+                    onAccept: moveProductToGrabbed,
+                    builder: (context, candidateData, rejectedData) {
+                      return ListView.builder(
+                        itemCount: grabbedProducts.length,
+                        itemBuilder: (context, index) {
+                          final product = grabbedProducts[index];
+                          return buildDraggableProductItem(product,
+                              onDragged: moveProductToAvailable);
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+      floatingActionButton: Stack(
+        children: [
           Positioned(
             bottom: 15,
             right: 15,

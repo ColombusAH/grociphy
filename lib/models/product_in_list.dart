@@ -10,12 +10,14 @@ class ProductInList {
   final int quantity;
   final Category category;
   final GroupMember addedBy;
+  final bool isGrabbed;
 
   ProductInList({
     required this.id,
     required this.name,
     this.description = '',
     required this.unit,
+    required this.isGrabbed,
     required this.categoryId,
     required this.quantity,
     required this.category,
@@ -34,6 +36,7 @@ class ProductInList {
       unit: product['unit'],
       categoryId: product['categoryId'],
       quantity: json['quantity'],
+      isGrabbed: json['isGrabbed'],
       category: Category.fromJson(category),
       addedBy: GroupMember.fromJson(addedBy),
     );
