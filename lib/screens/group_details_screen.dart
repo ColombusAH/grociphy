@@ -18,8 +18,13 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
   @override
   void initState() {
     super.initState();
-    // Initialize availableProducts with widget.group.products
-    products = List.from(widget.group.products);
+     widget.group.products.forEach((product) {
+      if (product.isGrabbed) {
+        grabbedProducts.add(product);
+      } else {
+        products.add(product);
+      }
+    });
   }
 
   void moveProductToGrabbed(ProductInList product) {
@@ -40,29 +45,43 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
     }
   }
 
+  // Customize ListTile for a more game-oriented design
   Widget buildDraggableProductItem(ProductInList product,
       {required Function(ProductInList) onDragged}) {
+    // Custom colors and fonts for ListTile
+    TextStyle titleStyle = TextStyle(
+      color: Colors.greenAccent[400],
+      fontWeight: FontWeight.bold,
+      fontSize: 16,
+    );
+    TextStyle subtitleStyle = TextStyle(
+      color: Colors.white70,
+      fontSize: 14,
+    );
+
     return Draggable<ProductInList>(
       data: product,
       feedback: Card(
+        color: Colors.deepPurple[400],
         child: ConstrainedBox(
           constraints: BoxConstraints(maxWidth: 150, maxHeight: 60),
           child: ListTile(
-            title: Text(product.name),
+            title: Text(product.name, style: titleStyle),
+            subtitle: Text(product.description, style: subtitleStyle),
           ),
         ),
       ),
       childWhenDragging: Opacity(
         opacity: 0.5,
         child: ListTile(
-          title: Text(product.name),
-          subtitle: Text(product.description),
+          title: Text(product.name, style: titleStyle),
+          subtitle: Text(product.description, style: subtitleStyle),
         ),
       ),
       onDragCompleted: () => onDragged(product),
       child: ListTile(
-        title: Text(product.name),
-        subtitle: Text(product.description),
+        title: Text(product.name, style: titleStyle),
+        subtitle: Text(product.description, style: subtitleStyle),
       ),
     );
   }
@@ -81,8 +100,15 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
               children: [
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text('Products',
-                      style: Theme.of(context).textTheme.headline6),
+                  child: Text(
+                    'Products',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color:
+                          Theme.of(context).primaryColor, // Or a custom color
+                    ),
+                  ),
                 ),
                 Expanded(
                   child: DragTarget<ProductInList>(
@@ -108,8 +134,15 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
               children: [
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text('Grabbed',
-                      style: Theme.of(context).textTheme.headline6),
+                  child: Text(
+                    'Grabbed',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color:
+                          Theme.of(context).primaryColor, // Or a custom color
+                    ),
+                  ),
                 ),
                 Expanded(
                   child: DragTarget<ProductInList>(
@@ -141,6 +174,7 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
                 // Logic to add a new product
               },
               child: Icon(Icons.add),
+              backgroundColor: Theme.of(context).primaryColorLight,
             ),
           ),
         ],
